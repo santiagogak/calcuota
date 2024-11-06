@@ -1,3 +1,4 @@
+alert('Bienvenido/a a la Calculadora de cuotas con interés!');
 //Variable capital para el monto del credito. Se pregunta tantas veces sea necesario hasta tener un número como respuesta
 let capital;
 let isCapital = false;
