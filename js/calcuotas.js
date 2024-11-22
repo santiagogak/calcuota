@@ -1,6 +1,35 @@
-window.onload = function() {
 
-    alert('Bienvenido/a a la Calculadora de cuotas con interés!');
+import RegistroCalculo from './registrocalculo.js';
+const calcButton = document.getElementById("calcular");
+
+//variable para guardar el historial de cálculos
+let historial = [];
+
+const crearTablaRegistros = (arrH) => {
+    const resultados = document.getElementById('resultados');
+    resultados.innerHTML = '';
+    arrH.forEach((h,idx) => {
+        const creditoHTML = `
+        <div class="registro">
+            <h2>Registro ${idx+1}:</h2>
+            <div class="infoLeft">
+                <p>Monto: ${h.formatoMoneda(h.monto)}</p>
+                <p>Tasa: ${h.tasa}%</p>
+                <p>Cuotas: ${h.cuotas}</p>
+            </div>
+            <div class="infoRight">
+                <p>Pago Mensual: ${h.formatoMoneda(h.pagoMensual)}</p>
+                <p>Total Interéses: ${h.imprimirTotalInteres()}</p>
+                <p>Cuotas:<br> ${h.imprimirDetallePagos(true)}</p>
+            </div>
+        </div>
+        `;
+        resultados.insertAdjacentHTML( 'beforeend', creditoHTML );
+    });
+}
+
+calcButton.addEventListener('click', function() {
+
     //Variable capital para el monto del credito. Se pregunta tantas veces sea necesario hasta tener un número como respuesta
     let capital;
     let isCapital = false;
@@ -34,42 +63,12 @@ window.onload = function() {
         }
     }
     
-    //Función para calcular el pago mensual del crédito
-    const pagoMensual = (cap, int, cuo) => {
-        const intN = int / 100;
-        //Fórmula de amortización
-        if (cuo > 1) {
-            return (cap*intN) / (1-(1+intN)**(-cuo));
-        } else {
-            return cap;
-        }
-    };
-    
-    //Funcion para dar formato de moneda al número
-    const formatoMoneda = (monto) => monto.toLocaleString('es-CL', {style: 'currency', currency: 'CLP', maximumFractionDigits: 2 });
-    
-    //Función para calcular todos los pagos mensuales mes a mes y el interés que se paga en cada uno, así como el total de interes pagado
-    function detallePagos (cap, int, cuo) {
-        const intN = int / 100;
-        const pagoMes = pagoMensual(cap,int,cuo);
-        let strPagos = '';
-        
-        if (cuo > 1) {
-            let restoCap = cap;
-            let totalInteres = 0;
-            for (let i = 1; i <= cuotas; i++) {
-                const capMes = restoCap * (1+intN);
-                strPagos = strPagos + `Pago ${i}: ${formatoMoneda(restoCap)} - Interés: ${formatoMoneda(restoCap*intN)}\n`;
-                totalInteres += restoCap*intN;
-                restoCap = capMes - pagoMes;
-            }
-            strPagos = strPagos + `\nTotal Intereses: ${formatoMoneda(totalInteres)}`;
-        } else {
-            strPagos = strPagos + `Pago: ${formatoMoneda(cap)} - Interés: 0`;
-        }
-        return strPagos;
-    }
-    
-    alert(`Pago Mensual: ${formatoMoneda(pagoMensual(capital,interes,cuotas))}`)
-    alert(detallePagos(capital,interes,cuotas))
-}
+    const credito = new RegistroCalculo(capital, interes, cuotas);
+    credito.calcularTodo();
+    historial.push(credito);
+    alert(`Pago Mensual: ${credito.formatoMoneda(credito.pagoMensual)}`)
+    alert(`${credito.imprimirDetallePagos()}`)
+    alert(`Total Interés: ${credito.imprimirTotalInteres()}`);
+    console.log(historial);
+    crearTablaRegistros(historial);
+});
