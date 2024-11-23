@@ -65,5 +65,14 @@ button {
 }
 .infoLeft {
     border-right: 1px solid black;
-    font-size: 25px;
+    font-size: 24px;
+}
+
+@media (max-width: 768px) {
+    #resultados {
+        width: 100%;
+    }
+    .infoLeft {
+        font-size: 14px;
+    }
 }
