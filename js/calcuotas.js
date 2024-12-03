@@ -28,47 +28,23 @@ const crearTablaRegistros = (arrH) => {
     });
 }
 
-calcButton.addEventListener('click', function() {
+calcButton.addEventListener('submit', (e) => {
 
+    e.preventDefault();
+    
     //Variable capital para el monto del credito. Se pregunta tantas veces sea necesario hasta tener un número como respuesta
-    let capital;
-    let isCapital = false;
-    while (!isCapital) {
-        capital = parseFloat(prompt('Introduce el monto de tu crédito (sin puntos, ni comas, ni $, solo el monto entre 1 peso a 100 Millones):'));
-        isCapital = !isNaN(capital) && (capital >= 1 && capital <= 100000000);
-        if (!isCapital) {
-            alert('Por favor, introduce un valor válido');
-        }
-    }
+    const capital = document.getElementById("monto").value || 1;
     
     //Variable interes para la tasa de interés. Se pregunta tantas veces sea necesario hasta tener un número como respuesta
-    let interes;
-    let isInteres = false;
-    while (!isInteres) {
-        interes = parseFloat(prompt('Introduce la tasa de interés (sin %, solo el número entre 0.1 y 100%):'));
-        isInteres = !isNaN(interes) && (interes >= 0.1 && interes <= 100);
-        if (!isInteres) {
-            alert('Por favor, introduce un valor válido');
-        }
-    }
+    const interes = document.getElementById("interes").value || 0.1;
     
     //Variable cuotas para el número de cuotas. Se pregunta tantas veces sea necesario hasta tener un número entre 1 y 24 como respuesta
-    let cuotas;
-    let isCuotas = false;
-    while (!isCuotas) {
-        cuotas = parseInt(prompt('Introduce cuantas cuotas tiene el crédito (entre 1 y 24)'));
-        isCuotas = !isNaN(cuotas) && (cuotas >= 1 && cuotas <= 24);
-        if (!isCuotas) {
-            alert('Por favor, introduce un valor válido');
-        }
-    }
+    const cuotas = document.getElementById("cuotas").value || 1;
+
     
     const credito = new RegistroCalculo(capital, interes, cuotas);
     credito.calcularTodo();
     historial.push(credito);
-    alert(`Pago Mensual: ${credito.formatoMoneda(credito.pagoMensual)}`)
-    alert(`${credito.imprimirDetallePagos()}`)
-    alert(`Total Interés: ${credito.imprimirTotalInteres()}`);
     console.log(historial);
     crearTablaRegistros(historial);
 });

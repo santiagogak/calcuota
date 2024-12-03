@@ -10,7 +10,21 @@
 <body>
     <main class="container">
         <h1>Calculadora de Cuotas de Crédito</h1>
-        <button id="calcular">Simular Crédito</button>
+        <form action="" id="calcular">
+            <div class="field">
+                <label for="monto">Monto del préstamo:</label>
+                <input type="number" id="monto"/>
+            </div>
+            <div class="field">
+                <label for="interes">Tasa de Interés:</label>
+                <input type="number" id="interes"/>
+            </div>
+            <div class="field">
+                <label for="cuotas">Número de Cuotas:</label>
+                <input type="number" id="cuotas"/>
+            </div>
+            <button class="submit" type="submit">Simular Crédito</button>
+        </form>
         <div id="resultados"></div>
     </main>
     <script type="module" src="js/calcuotas.js" defer></script>

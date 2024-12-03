@@ -27,7 +27,7 @@ h1 {
     padding: 15px 0;
 }
 
-button {
+.submit {
     background-color: greenyellow;
     margin: 25px auto;
     width: 200px;
