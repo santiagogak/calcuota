@@ -27,8 +27,26 @@ h1 {
     padding: 15px 0;
 }
 
+.field {
+    padding: 10px;
+    margin: 5px auto;
+}
+
+.field label {
+    display: block;
+}
+
+.field input {
+    text-align: right;
+}
+
+.errorMessage {
+    font-size: 14px;
+    color: red;
+}
+
 .submit, .clear, .print {
-    margin: 25px auto;
+    margin: 6px auto;
     width: 200px;
     font-weight: 300;
     padding: 10px;
