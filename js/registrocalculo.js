@@ -1,8 +1,8 @@
 export default class RegistroCalculo {
     constructor(monto = 0, tasa = 0, cuotas = 1) {
-        this.monto = monto;
-        this.tasa = tasa;
-        this.cuotas = cuotas;
+        this.monto = parseInt(monto);
+        this.tasa = parseInt(tasa);
+        this.cuotas = parseInt(cuotas);
         this.pagoMensual = 0;
         this.pagos = [];
     }

@@ -1,31 +1,38 @@
 
 import RegistroCalculo from './registrocalculo.js';
 const calcButton = document.getElementById("calcular");
+const clearButton = document.getElementById("clear");
+const printButton = document.getElementById("print");
 
-//variable para guardar el historial de cálculos
-let historial = [];
+const crearTablaRegistros = () => {
 
-const crearTablaRegistros = (arrH) => {
+    const historial = window.localStorage;
+    console.log(historial);
+    
     const resultados = document.getElementById('resultados');
     resultados.innerHTML = '';
-    arrH.forEach((h,idx) => {
+    for (let i = 0; i < localStorage.length; i++) {
+        const idx = localStorage.key(i);
+        const entry = JSON.parse(localStorage.getItem(idx));
+        const h = Object.assign(new RegistroCalculo, entry);
+        console.log(h);
         const creditoHTML = `
         <div class="registro">
-            <h2>Registro ${idx+1}:</h2>
-            <div class="infoLeft">
-                <p>Monto: ${h.formatoMoneda(h.monto)}</p>
-                <p>Tasa: ${h.tasa}%</p>
-                <p>Cuotas: ${h.cuotas}</p>
-            </div>
-            <div class="infoRight">
-                <p>Pago Mensual: ${h.formatoMoneda(h.pagoMensual)}</p>
-                <p>Total Interéses: ${h.imprimirTotalInteres()}</p>
-                <p>Cuotas:<br> ${h.imprimirDetallePagos(true)}</p>
-            </div>
+        <h2>Registro ${parseInt(idx)}:</h2>
+        <div class="infoLeft">
+        <p>Monto: ${h.formatoMoneda(h.monto)}</p>
+        <p>Tasa: ${h.tasa}%</p>
+        <p>Cuotas: ${h.cuotas}</p>
+        </div>
+        <div class="infoRight">
+        <p>Pago Mensual: ${h.formatoMoneda(h.pagoMensual)}</p>
+        <p>Total Interéses: ${h.imprimirTotalInteres()}</p>
+        <p>Cuotas:<br> ${h.imprimirDetallePagos(true)}</p>
+        </div>
         </div>
         `;
         resultados.insertAdjacentHTML( 'beforeend', creditoHTML );
-    });
+    }
 }
 
 calcButton.addEventListener('submit', (e) => {
@@ -44,7 +51,17 @@ calcButton.addEventListener('submit', (e) => {
     
     const credito = new RegistroCalculo(capital, interes, cuotas);
     credito.calcularTodo();
-    historial.push(credito);
-    console.log(historial);
-    crearTablaRegistros(historial);
+    localStorage.setItem(localStorage.length,JSON.stringify(credito));
+    crearTablaRegistros();
+});
+
+clearButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    localStorage.clear();
+    crearTablaRegistros();
+});
+
+printButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    crearTablaRegistros();
 });

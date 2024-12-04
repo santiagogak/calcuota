@@ -27,14 +27,27 @@ h1 {
     padding: 15px 0;
 }
 
-.submit {
-    background-color: greenyellow;
+.submit, .clear, .print {
     margin: 25px auto;
     width: 200px;
     font-weight: 300;
     padding: 10px;
     border: 2px solid black;
     border-radius: 30px;
+}
+
+.submit {
+    background-color: greenyellow;
+}
+
+.print {
+    background-color: blue;
+    color: white;
+}
+
+.clear {
+    background-color: red;
+    color: white;
 }
 
 #resultados {
