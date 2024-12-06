@@ -9,16 +9,17 @@ const crearTablaRegistros = () => {
     for (let i = localStorage.length-1; i >= 0; i--) {
         const entry = JSON.parse(localStorage.getItem(i+""));
         const h = Object.assign(new RegistroCalculo, entry);
+        const {monto, tasa, cuotas, pagoMensual} = h;
         const creditoHTML = `
         <div class="registro">
         <h2>Registro ${parseInt(i+1)}:</h2>
         <div class="infoLeft">
-        <p>Monto: ${h.formatoMoneda(h.monto)}</p>
-        <p>Tasa: ${h.tasa}%</p>
-        <p>Cuotas: ${h.cuotas}</p>
+        <p>Monto: ${h.formatoMoneda(monto)}</p>
+        <p>Tasa: ${tasa}%</p>
+        <p>Cuotas: ${cuotas}</p>
         </div>
         <div class="infoRight">
-        <p>Pago Mensual: ${h.formatoMoneda(h.pagoMensual)}</p>
+        <p>Pago Mensual: ${h.formatoMoneda(pagoMensual)}</p>
         <p>Total Interéses: ${h.imprimirTotalInteres()}</p>
         <p>Cuotas:<br> ${h.imprimirDetallePagos(true)}</p>
         </div>
@@ -65,9 +66,9 @@ calcButton.addEventListener('submit', (e) => {
     //Variable cuotas para el número de cuotas. Se pregunta tantas veces sea necesario hasta tener un número entre 1 y 24 como respuesta
     const cuotas = document.getElementById("cuotas").value || 1;
     let isCuotas = true;
-    if (cuotas < 1 || cuotas > 24) {
+    if (cuotas < 1 || cuotas > 36) {
         if (!document.getElementById("errorCuotas")) {
-            document.getElementById("cuotas").insertAdjacentHTML('afterend', `<p class="errorMessage" id='errorCuotas'>Por favor, introduce entre 1 a 24 cuotas</p>`);
+            document.getElementById("cuotas").insertAdjacentHTML('afterend', `<p class="errorMessage" id='errorCuotas'>Por favor, introduce entre 1 a 36 cuotas</p>`);
         }
         isCuotas = false;
     } else {
