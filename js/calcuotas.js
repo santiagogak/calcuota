@@ -67,7 +67,6 @@ const getInteresCMF = async () => {
                 
                 tasaButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    console.log('presione tasa');
                     document.getElementById('interes').value = jsonCMF.TIPs[idxTIP].Valor.replace(',','.');
                 });
             }
