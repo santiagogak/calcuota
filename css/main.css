@@ -66,6 +66,7 @@ h1 {
 
 .submit {
     background-color: greenyellow;
+    color: black;
 }
 
 .print {
@@ -76,6 +77,11 @@ h1 {
 .clear {
     background-color: red;
     color: white;
+}
+
+.btn-tasa {
+    background-color: whitesmoke;
+    color: black;
 }
 
 #resultados {
