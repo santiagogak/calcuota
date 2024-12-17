@@ -3,6 +3,7 @@ const calcButton = document.getElementById("calcular");
 const clearButton = document.getElementById("clear");
 const printButton = document.getElementById("print");
 
+//Funcion para crear el HTML de cada Registro de calculo
 const crearTablaRegistros = () => {    
     const resultados = document.getElementById('resultados');
     resultados.innerHTML = '';
@@ -29,6 +30,57 @@ const crearTablaRegistros = () => {
     }
 }
 
+//Funcion para crear el HTML que muestra la información de la tasa de interés promedio de la CMF de Chile y el botón para utilizar esa tasa
+const appendInteresCMF = (v) => {    
+    const interesCMF = document.getElementById('cmf');
+    interesCMF.innerHTML = '';
+    const cmfHTML = `
+    <p>La Tasa de Interés Promedio (CMF - Comisión para el Mercado Financiero de Chile) para el <strong>${v.Fecha}</strong> es de: <strong>${v.Valor}%</strong></p>
+    <button class='btn-tasa' id='btn-tasa'>Usar Tasa CMF</button>
+    `;
+    
+    interesCMF.insertAdjacentHTML( 'beforeend', cmfHTML );
+}
+
+//Función que hace el fetch de consulta a la API de la CMF de Chile para obtener la tasa de interés promedio
+const getInteresCMF = async () => {
+    const apiKey = "34dbf03ff4807805ecec32150fb4ee0b02733186";
+    const urlCMF = `https://api.cmfchile.cl/api-sbifv3/recursos_api/tip/2024?apikey=${apiKey}&formato=json`;
+    
+    try {
+        const response = await fetch(urlCMF);
+        if (response.ok) {
+            const jsonCMF = await response.json();
+            const today = new Date();
+            let idxTIP;
+            let diffDias = today;
+            jsonCMF.TIPs.forEach((e,idx) => {
+                const eDate = new Date(e.Fecha+"T00:00:00");
+                if (e.Tipo == "21" && (today - eDate < diffDias)) {
+                    diffDias = today - eDate;
+                    idxTIP = idx;
+                }
+            });
+            if (idxTIP) {
+                appendInteresCMF(jsonCMF.TIPs[idxTIP]);
+                const tasaButton = document.getElementById("btn-tasa");
+                
+                tasaButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('presione tasa');
+                    document.getElementById('interes').value = jsonCMF.TIPs[idxTIP].Valor.replace(',','.');
+                });
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+//Llamo a la API CMF para obtener la tasa de interés promedio
+getInteresCMF();
+
+//Botón de cálculo de intereses
 calcButton.addEventListener('submit', (e) => {
 
     e.preventDefault();
@@ -86,12 +138,14 @@ calcButton.addEventListener('submit', (e) => {
     }
 });
 
+//Borrar los registros del LocalStorage
 clearButton.addEventListener('click', (e) => {
     e.preventDefault();
     localStorage.clear();
     crearTablaRegistros();
 });
 
+//Imprimir todos los registros guardados en el LocalStorage
 printButton.addEventListener('click', (e) => {
     e.preventDefault();
     crearTablaRegistros();

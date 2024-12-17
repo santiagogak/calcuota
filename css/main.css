@@ -27,9 +27,18 @@ h1 {
     padding: 15px 0;
 }
 
+#cmf {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin: 30px auto;
+    margin-bottom: 10px;
+}
+
 .field {
     padding: 10px;
     margin: 5px auto;
+    font-size: 20px;
 }
 
 .field label {
@@ -38,6 +47,7 @@ h1 {
 
 .field input {
     text-align: right;
+    height: 30px;
 }
 
 .errorMessage {
@@ -45,7 +55,7 @@ h1 {
     color: red;
 }
 
-.submit, .clear, .print {
+.submit, .clear, .print, .btn-tasa {
     margin: 6px auto;
     width: 200px;
     font-weight: 300;
