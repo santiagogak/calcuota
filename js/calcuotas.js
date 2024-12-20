@@ -1,19 +1,16 @@
 import RegistroCalculo from './registrocalculo.js';
-const calcButton = document.getElementById("calcular");
-const clearButton = document.getElementById("clear");
-const printButton = document.getElementById("print");
+const calcButton = document.getElementById("calcular") || [];
+const clearButton = document.getElementById("clear") || [];
+const printButton = document.getElementById("print") || [];
 
-//Funcion para crear el HTML de cada Registro de calculo
-const crearTablaRegistros = () => {    
+//Funcion para crear el HTMl del resultado del calculo de las cuotas
+const imprimirRegistro = (h) => {    
+    const {monto = 1, tasa = 0.1, cuotas = 1, pagoMensual = 0} = h;
     const resultados = document.getElementById('resultados');
     resultados.innerHTML = '';
-    for (let i = localStorage.length-1; i >= 0; i--) {
-        const entry = JSON.parse(localStorage.getItem(i+""));
-        const h = Object.assign(new RegistroCalculo, entry);
-        const {monto, tasa, cuotas, pagoMensual} = h;
-        const creditoHTML = `
+    const creditoHTML =`
         <div class="registro">
-        <h2>Registro ${parseInt(i+1)}:</h2>
+        <h2>Resultado:</h2>
         <div class="infoLeft">
         <p>Monto: ${h.formatoMoneda(monto)}</p>
         <p>Tasa: ${tasa}%</p>
@@ -26,18 +23,57 @@ const crearTablaRegistros = () => {
         </div>
         </div>
         `;
+    resultados.insertAdjacentHTML( 'beforeend', creditoHTML );
+}
+
+//Funcion para crear el HTML del historial de registros
+const crearTablaRegistros = () => {    
+    const resultados = document.getElementById('resultados');
+    resultados.innerHTML = '';
+    let creditoHTML ='';
+    if (localStorage.length === 0) {
+        creditoHTML = `
+        <div class="registro">
+        <h2>No hay registros</h2>
+        </div>
+        `;
         resultados.insertAdjacentHTML( 'beforeend', creditoHTML );
+    } else {
+        
+        for (let i = localStorage.length-1; i >= 0; i--) {
+            const entry = JSON.parse(localStorage.getItem(i+""));
+            const h = Object.assign(new RegistroCalculo, entry);
+            const {monto = 1, tasa = 0.1, cuotas = 1, pagoMensual = 0} = h;
+            creditoHTML = `
+            <div class="registro">
+            <h2>Registro ${parseInt(i+1)}:</h2>
+            <div class="infoLeft">
+            <p>Monto: ${h.formatoMoneda(monto)}</p>
+            <p>Tasa: ${tasa}%</p>
+            <p>Cuotas: ${cuotas}</p>
+            </div>
+            <div class="infoRight">
+            <p>Pago Mensual: ${h.formatoMoneda(pagoMensual)}</p>
+            <p>Total Interéses: ${h.imprimirTotalInteres()}</p>
+            <p>Cuotas:<br> ${h.imprimirDetallePagos(true)}</p>
+            </div>
+            </div>
+            `;
+            resultados.insertAdjacentHTML( 'beforeend', creditoHTML );
+        }
     }
 }
 
 //Funcion para crear el HTML que muestra la información de la tasa de interés promedio de la CMF de Chile y el botón para utilizar esa tasa
-const appendInteresCMF = (v) => {    
+const appendInteresCMF = (v = null) => {    
     const interesCMF = document.getElementById('cmf');
     interesCMF.innerHTML = '';
-    const cmfHTML = `
+    const cmfHTML = v!=null ? `
     <p>La Tasa de Interés Promedio (CMF - Comisión para el Mercado Financiero de Chile) para el <strong>${v.Fecha}</strong> es de: <strong>${v.Valor}%</strong></p>
     <button class='btn-tasa' id='btn-tasa'>Usar Tasa CMF</button>
-    `;
+    ` 
+    : 
+    `<p>La Tasa de Interés Promedio (CMF - Comisión para el Mercado Financiero de Chile) no está disponible en estos momentos</p>`;
     
     interesCMF.insertAdjacentHTML( 'beforeend', cmfHTML );
 }
@@ -67,12 +103,14 @@ const getInteresCMF = async () => {
                 
                 tasaButton.addEventListener('click', (e) => {
                     e.preventDefault();
-                    document.getElementById('interes').value = jsonCMF.TIPs[idxTIP].Valor.replace(',','.');
+                    document.getElementById('interes').value = jsonCMF.TIPs[idxTIP].Valor;
                 });
             }
+        } else {
+            appendInteresCMF();
         }
     } catch (error) {
-        console.log(error);
+        appendInteresCMF();
     }
 }
 
@@ -133,7 +171,15 @@ calcButton.addEventListener('submit', (e) => {
         const credito = new RegistroCalculo(capital, interes, cuotas);
         credito.calcularTodo();
         localStorage.setItem(localStorage.length,JSON.stringify(credito));
-        crearTablaRegistros();
+        imprimirRegistro(credito);
+        
+        Swal.fire({
+            title: 'Cálculo Exitoso',
+            text: `Tu crédito de ${credito.formatoMoneda(credito.monto)} a ${credito.cuotas} cuotas tendrá un pago mensual de ${credito.formatoMoneda(credito.pagoMensual)} con un total de interéses a pagar de ${credito.formatoMoneda(credito.totalInteres())}`,
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+
     }
 });
 
@@ -141,7 +187,8 @@ calcButton.addEventListener('submit', (e) => {
 clearButton.addEventListener('click', (e) => {
     e.preventDefault();
     localStorage.clear();
-    crearTablaRegistros();
+    const resultados = document.getElementById('resultados');
+    resultados.innerHTML = '';
 });
 
 //Imprimir todos los registros guardados en el LocalStorage
